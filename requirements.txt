@@ -1,8 +1,8 @@
-Flask
+flask
 selenium
 google-api-python-client
 google-auth
 google-auth-oauthlib
 python-dotenv
-flask
 gunicorn
+selenium
