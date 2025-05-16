@@ -24,8 +24,23 @@ def run_bot():
             return jsonify({"status": "error", "message": "Missing required fields"}), 400
 
         # Run the bot script with the input data
-        subprocess.run(["python3", "Main.py", json.dumps(data)], check=True)
-        return jsonify({"status": "success", "message": "Bot executed"}), 200
+        try:
+            result = subprocess.run(
+                ["python3", "Main.py", json.dumps(data)],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            print("📤 Subprocess STDOUT:\n", result.stdout)
+            print("📥 Subprocess STDERR:\n", result.stderr)
+            return jsonify({"status": "success", "message": "Bot executed"}), 200
+
+        except subprocess.CalledProcessError as e:
+            print("❌ Subprocess failed:")
+            print("STDOUT:", e.stdout)
+            print("STDERR:", e.stderr)
+            return jsonify({"status": "error", "message": e.stderr}), 500
+
 
     except subprocess.CalledProcessError as e:
         return jsonify({"status": "error", "message": str(e)}), 500
