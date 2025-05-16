@@ -5,6 +5,11 @@ import os
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET', 'HEAD'])
+def health_check():
+    return "✅ GHL Automation is live", 200
+
+
 @app.route('/trigger', methods=['GET', 'POST', 'HEAD'])
 def run_bot():
     if request.method in ['GET', 'HEAD']:
