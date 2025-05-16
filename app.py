@@ -13,6 +13,7 @@ def run_bot():
     try:
         data = request.get_json()
         required_fields = ['client_name', 'lead_name', 'email', 'business_name']
+        print(required_fields)
 
         if not all(field in data for field in required_fields):
             return jsonify({"status": "error", "message": "Missing required fields"}), 400

@@ -200,3 +200,15 @@ def run_automation(data):
 
     time.sleep(5)
     driver.quit()
+
+if __name__ == '__main__':
+    import sys
+    try:
+        if len(sys.argv) > 1:
+            data = json.loads(sys.argv[1])
+            print("🚀 Main.py received data:", data)
+            run_automation(data)
+        else:
+            print("❌ No input passed to Main.py")
+    except Exception as e:
+        print("❌ Main.py crashed:", str(e))
