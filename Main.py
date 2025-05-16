@@ -54,9 +54,6 @@ wait = WebDriverWait(driver, 20)
 # --- Open GHL ---
 driver.get("https://app.gohighlevel.com")
 
-# --- Handle Security Code if required or go straight to dashboard ---
-print(f"Attempting to switch to client: {CLIENT_NAME}")
-
 try:
     # If already in client view, click location switcher (does nothing here)
     wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[class*="location-switcher__trigger"]'))).click()
