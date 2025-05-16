@@ -39,157 +39,164 @@ def get_security_code_from_gmail():
     return None
 
 def run_automation(data):
-    print("🚀 run_automation triggered with data:", data)
-    print(data)
-    CLIENT_NAME = data["client_name"]
-    LEAD_NAME = data["lead_name"]
-    LEAD_EMAIL = data["email"]
-    BUSINESS_NAME = data["business_name"]
-    print(CLIENT_NAME, LEAD_NAME, LEAD_EMAIL, BUSINESS_NAME)
-
-    # --- Setup Headless Chrome ---
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(options=chrome_options)
-    wait = WebDriverWait(driver, 20)
-
-    # --- Open GHL ---
-    driver.get("https://app.gohighlevel.com")
-
     try:
-        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[class*="location-switcher__trigger"]'))).click()
-    except:
-        print("You're in Agency Dashboard — switching to sub-account...")
-        switch_btn = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.ID, "location-switcher-sidbar-v2"))
-        )
-        switch_btn.click()
-        print("✅ Clicked the location switcher")
+        print("🚀 run_automation triggered with data:", data)
+
+        CLIENT_NAME = data["client_name"]
+        LEAD_NAME = data["lead_name"]
+        LEAD_EMAIL = data["email"]
+        BUSINESS_NAME = data["business_name"]
+        print("📦 Parsed inputs:", CLIENT_NAME, LEAD_NAME, LEAD_EMAIL, BUSINESS_NAME)
+
+        # --- Setup Headless Chrome ---
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Chrome(options=chrome_options)
+        wait = WebDriverWait(driver, 20)
+        print("🧠 Chrome started")
+
+        # --- Open GHL ---
+        driver.get("https://app.gohighlevel.com")
+        print("🌐 Navigated to GHL")
+
+        try:
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[class*="location-switcher__trigger"]'))).click()
+        except:
+            print("You're in Agency Dashboard — switching to sub-account...")
+            switch_btn = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.ID, "location-switcher-sidbar-v2"))
+            )
+            switch_btn.click()
+            print("✅ Clicked the location switcher")
+            time.sleep(1)
+
+        search_input = wait.until(EC.presence_of_element_located(
+            (By.XPATH, '//input[@placeholder="Search for a sub-account"]')
+        ))
+        search_input.clear()
+        search_input.send_keys(CLIENT_NAME)
         time.sleep(1)
 
-    search_input = wait.until(EC.presence_of_element_located(
-        (By.XPATH, '//input[@placeholder="Search for a sub-account"]')
-    ))
-    search_input.clear()
-    search_input.send_keys(CLIENT_NAME)
-    time.sleep(1)
+        client_result = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'div.hl_account')
+        ))
+        client_result.click()
+        print(f"✅ Switched to client: {CLIENT_NAME}")
 
-    client_result = wait.until(EC.element_to_be_clickable(
-        (By.CSS_SELECTOR, 'div.hl_account')
-    ))
-    client_result.click()
-    print(f"✅ Switched to client: {CLIENT_NAME}")
-
-    search_input = wait.until(
-        EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Search for a sub-account"]'))
-    )
-    search_input.clear()
-    search_input.send_keys(CLIENT_NAME)
-    time.sleep(2)
-
-    wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Opportunities"))).click()
-
-    funnel_input = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input.n-base-selection-input')))
-    funnel_input.click()
-    time.sleep(1)
-    funnel_input.send_keys("Interview Funnel")
-    time.sleep(1)
-    funnel_input.send_keys(Keys.RETURN)
-    print("✅ Interview Funnel selected")
-
-    time.sleep(2)
-    search_input = wait.until(
-        EC.element_to_be_clickable((By.ID, 'list-view-record-search'))
-    )
-    search_input.click()
-    search_input.clear()
-    search_input.send_keys(LEAD_NAME)
-    print(f"🔍 Searched for lead: {LEAD_NAME}")
-    time.sleep(2)
-
-    try:
-        print(f"Waiting for lead to show up in results: {LEAD_NAME}")
-        lead_card = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-contact-id]'))
+        search_input = wait.until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Search for a sub-account"]'))
         )
-        lead_card.click()
-        print(f"✅ Clicked lead card: {LEAD_NAME}")
+        search_input.clear()
+        search_input.send_keys(CLIENT_NAME)
+        time.sleep(2)
 
-        dropdowns = wait.until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.n-base-selection-input'))
+        wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Opportunities"))).click()
+
+        funnel_input = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input.n-base-selection-input')))
+        funnel_input.click()
+        time.sleep(1)
+        funnel_input.send_keys("Interview Funnel")
+        time.sleep(1)
+        funnel_input.send_keys(Keys.RETURN)
+        print("✅ Interview Funnel selected")
+
+        time.sleep(2)
+        search_input = wait.until(
+            EC.element_to_be_clickable((By.ID, 'list-view-record-search'))
         )
-        stage_dropdown = dropdowns[1]
-        driver.execute_script("arguments[0].scrollIntoView(true);", stage_dropdown)
-        driver.execute_script("arguments[0].click();", stage_dropdown)
-        time.sleep(1)
+        search_input.click()
+        search_input.clear()
+        search_input.send_keys(LEAD_NAME)
+        print(f"🔍 Searched for lead: {LEAD_NAME}")
+        time.sleep(2)
 
-        option = wait.until(EC.element_to_be_clickable((
-            By.XPATH,
-            '//p[text()="Interview Call Booked"]/ancestor::div[contains(@class, "n-base-select-option")]'
-        )))
-        option.click()
-        time.sleep(1)
+        try:
+            print(f"Waiting for lead to show up in results: {LEAD_NAME}")
+            lead_card = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-contact-id]'))
+            )
+            lead_card.click()
+            print(f"✅ Clicked lead card: {LEAD_NAME}")
 
-        update_btn = wait.until(EC.element_to_be_clickable((By.ID, 'CreateUpdateOpportunity')))
-        update_btn.click()
-        print("✅ Stage updated and saved.")
+            dropdowns = wait.until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.n-base-selection-input'))
+            )
+            stage_dropdown = dropdowns[1]
+            driver.execute_script("arguments[0].scrollIntoView(true);", stage_dropdown)
+            driver.execute_script("arguments[0].click();", stage_dropdown)
+            time.sleep(1)
+
+            option = wait.until(EC.element_to_be_clickable((
+                By.XPATH,
+                '//p[text()="Interview Call Booked"]/ancestor::div[contains(@class, "n-base-select-option")]'
+            )))
+            option.click()
+            time.sleep(1)
+
+            update_btn = wait.until(EC.element_to_be_clickable((By.ID, 'CreateUpdateOpportunity')))
+            update_btn.click()
+            print("✅ Stage updated and saved.")
+
+        except Exception as e:
+            print(f"❌ Lead not found. Creating new opportunity for: {LEAD_NAME}")
+
+            add_button = wait.until(EC.element_to_be_clickable((By.ID, 'add-record-btn')))
+            add_button.click()
+            time.sleep(10)
+
+            name_field = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div#OpportunityModalContactNameInput .n-base-selection-label')))
+            name_field.click()
+            time.sleep(1)
+
+            input_field = wait.until(EC.presence_of_element_located(
+                (By.CSS_SELECTOR, 'div#OpportunityModalContactNameInput input.n-base-selection-input')))
+            input_field.send_keys(LEAD_NAME)
+            time.sleep(0.5)
+
+            create_new = wait.until(EC.element_to_be_clickable(
+                (By.XPATH, '//div[@class="n-base-select-menu__action" and @data-action="true"]')
+            ))
+            create_new.click()
+            time.sleep(0.5)
+            input_field.send_keys(Keys.RETURN)
+            time.sleep(1)
+
+            email_field = wait.until(EC.visibility_of_element_located((By.XPATH, '//input[@placeholder="Enter Email"]')))
+            email_field.click()
+            email_field.send_keys(LEAD_EMAIL)
+
+            business_field = wait.until(EC.visibility_of_element_located((By.XPATH, '//input[@placeholder="Enter Business Name"]')))
+            driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", business_field)
+            time.sleep(0.5)
+            business_field.click()
+            business_field.send_keys(BUSINESS_NAME)
+            time.sleep(0.5)
+
+            stage_dropdowns = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.n-base-selection-input')))
+            stage_dropdown = stage_dropdowns[1]
+            driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", stage_dropdown)
+            time.sleep(0.5)
+            driver.execute_script("arguments[0].click();", stage_dropdown)
+            time.sleep(1)
+
+            option = wait.until(EC.element_to_be_clickable((
+                By.XPATH, '//p[text()="Interview Call Booked"]/ancestor::div[contains(@class, "n-base-select-option")]'
+            )))
+            option.click()
+            time.sleep(1)
+
+            create_button = wait.until(EC.element_to_be_clickable((By.ID, "CreateUpdateOpportunity")))
+            create_button.click()
+            print("✅ New lead created and stage set.")
+
+        print("✅ Done — waiting 3 seconds before closing...")
+        time.sleep(3)
+        driver.quit()
 
     except Exception as e:
-        print(f"❌ Lead not found. Creating new opportunity for: {LEAD_NAME}")
+        print("❌ Unhandled exception in run_automation:", str(e))
 
-        add_button = wait.until(EC.element_to_be_clickable((By.ID, 'add-record-btn')))
-        add_button.click()
-        time.sleep(10)
-
-        name_field = wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'div#OpportunityModalContactNameInput .n-base-selection-label')))
-        name_field.click()
-        time.sleep(1)
-
-        input_field = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, 'div#OpportunityModalContactNameInput input.n-base-selection-input')))
-        input_field.send_keys(LEAD_NAME)
-        time.sleep(0.5)
-
-        create_new = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, '//div[@class="n-base-select-menu__action" and @data-action="true"]')
-        ))
-        create_new.click()
-        time.sleep(0.5)
-        input_field.send_keys(Keys.RETURN)
-        time.sleep(1)
-
-        email_field = wait.until(EC.visibility_of_element_located((By.XPATH, '//input[@placeholder="Enter Email"]')))
-        email_field.click()
-        email_field.send_keys(LEAD_EMAIL)
-
-        business_field = wait.until(
-            EC.visibility_of_element_located((By.XPATH, '//input[@placeholder="Enter Business Name"]')))
-        driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", business_field)
-        time.sleep(0.5)
-        business_field.click()
-        business_field.send_keys(BUSINESS_NAME)
-        time.sleep(0.5)
-
-        stage_dropdowns = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.n-base-selection-input')))
-        stage_dropdown = stage_dropdowns[1]
-        driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", stage_dropdown)
-        time.sleep(0.5)
-        driver.execute_script("arguments[0].click();", stage_dropdown)
-        time.sleep(1)
-
-        option = wait.until(EC.element_to_be_clickable((
-            By.XPATH, '//p[text()="Interview Call Booked"]/ancestor::div[contains(@class, "n-base-select-option")]'
-        )))
-        option.click()
-        time.sleep(1)
-
-        create_button = wait.until(EC.element_to_be_clickable((By.ID, "CreateUpdateOpportunity")))
-        create_button.click()
-        print("✅ New lead created and stage set.")
-
-    print("✅ Done — waiting 3 seconds before closing...")
     time.sleep(5)
     driver.quit()
