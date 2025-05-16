@@ -14,5 +14,9 @@ def trigger_bot():
 import os
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    try:
+        port = int(os.environ.get("PORT", 10000))
+        print(f"🟢 Starting Flask app on port {port}")
+        app.run(host="0.0.0.0", port=port)
+    except Exception as e:
+        print(f"❌ Failed to start Flask app: {e}")
