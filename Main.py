@@ -39,6 +39,7 @@ def get_security_code_from_gmail():
     return None
 
 def run_automation(data):
+    print("🚀 run_automation triggered with data:", data)
     print(data)
     CLIENT_NAME = data["client_name"]
     LEAD_NAME = data["lead_name"]

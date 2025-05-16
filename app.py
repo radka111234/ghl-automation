@@ -10,10 +10,13 @@ def home():
 
 @app.route('/trigger', methods=['POST'])
 def trigger_bot():
-    data = request.json
+    print("📬 Received /trigger request")
+    data = request.get_json()
+    print("📦 Payload:", data)
     thread = threading.Thread(target=run_automation, args=(data,))
     thread.start()
     return jsonify({"status": "Automation started"}), 202
+
 
 import os
 
