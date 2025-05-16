@@ -203,6 +203,13 @@ def run_automation(data):
 
 if __name__ == '__main__':
     import sys
+
+    print("📟 Main.py has started execution.")
+
+    if len(sys.argv) > 1:
+        print("📦 Received CLI args:", sys.argv[1])
+    else:
+        print("❌ No CLI args passed.")
     try:
         if len(sys.argv) > 1:
             data = json.loads(sys.argv[1])
