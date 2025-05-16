@@ -144,7 +144,7 @@ def run_automation(data):
 
             add_button = wait.until(EC.element_to_be_clickable((By.ID, 'add-record-btn')))
             add_button.click()
-            time.sleep(10)
+            time.sleep(3)
 
             name_field = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div#OpportunityModalContactNameInput .n-base-selection-label')))
             name_field.click()
@@ -192,13 +192,13 @@ def run_automation(data):
             print("✅ New lead created and stage set.")
 
         print("✅ Done — waiting 3 seconds before closing...")
-        time.sleep(3)
+        time.sleep(1)
         driver.quit()
 
     except Exception as e:
         print("❌ Unhandled exception in run_automation:", str(e))
 
-    time.sleep(5)
+    time.sleep(2)
     driver.quit()
 
 if __name__ == '__main__':
