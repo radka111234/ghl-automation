@@ -11,11 +11,13 @@ def health_check():
 
 @app.route('/trigger', methods=['GET', 'POST', 'HEAD'])
 def run_bot():
+
     if request.method in ['GET', 'HEAD']:
         return "✅ GHL Automation is live", 200
 
     try:
         data = request.get_json()
+        print("📥 Incoming request with data:", data, flush=True)
         required_fields = ['client_name', 'lead_name', 'email', 'business_name']
         print("📥 Incoming request with data:", data)
 
@@ -23,14 +25,18 @@ def run_bot():
             return jsonify({"status": "error", "message": "Missing required fields"}), 400
 
         # Run the bot and capture output
+        print("🔥 Starting subprocess with:", json.dumps(data), flush=True)
+
         result = subprocess.run(
             ["python3", "Main.py", json.dumps(data)],
             capture_output=True,
             text=True
         )
 
-        print("📤 Subprocess STDOUT:\n", result.stdout)
-        print("📥 Subprocess STDERR:\n", result.stderr)
+        print("📤 Subprocess STDOUT:\n", result.stdout, flush=True)
+        print("📥 Subprocess STDERR:\n", result.stderr, flush=True)
+
+
 
         if result.returncode != 0:
             return jsonify({"status": "error", "message": result.stderr}), 500
