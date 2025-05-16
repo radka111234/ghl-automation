@@ -14,29 +14,29 @@ from googleapiclient.discovery import build
 from selenium.webdriver import ActionChains
 
 # --- Gmail: Get latest 6-digit code ---
-def get_security_code_from_gmail():
-    SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-    creds = None
-
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-        creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-
-    service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(userId='me', labelIds=['INBOX'], maxResults=5).execute()
-    messages = results.get('messages', [])
-
-    for message in messages:
-        msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-        snippet = msg.get('snippet', '')
-        match = re.search(r'\b\d{6}\b', snippet)
-        if match:
-            return match.group(0)
-    return None
+# def get_security_code_from_gmail():
+#     SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+#     creds = None
+#
+#     if os.path.exists('token.json'):
+#         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+#     else:
+#         flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+#         creds = flow.run_local_server(port=0)
+#         with open('token.json', 'w') as token:
+#             token.write(creds.to_json())
+#
+#     service = build('gmail', 'v1', credentials=creds)
+#     results = service.users().messages().list(userId='me', labelIds=['INBOX'], maxResults=5).execute()
+#     messages = results.get('messages', [])
+#
+#     for message in messages:
+#         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+#         snippet = msg.get('snippet', '')
+#         match = re.search(r'\b\d{6}\b', snippet)
+#         if match:
+#             return match.group(0)
+#     return None
 
 def run_automation(data):
     try:
