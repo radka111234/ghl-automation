@@ -1,24 +1,31 @@
 from flask import Flask, request, jsonify
-import threading
-from Main import run_automation
+import subprocess
+import json
+import os
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def home():
-    return "✅ GHL Automation is live", 200
+@app.route('/trigger', methods=['GET', 'POST', 'HEAD'])
+def run_bot():
+    if request.method in ['GET', 'HEAD']:
+        return "✅ GHL Automation is live", 200
 
-@app.route('/trigger', methods=['POST'])
-def trigger_bot():
-    print("📬 Received /trigger request")
-    data = request.get_json()
-    print("📦 Payload:", data)
-    thread = threading.Thread(target=run_automation, args=(data,))
-    thread.start()
-    return jsonify({"status": "Automation started"}), 202
+    try:
+        data = request.get_json()
+        required_fields = ['client_name', 'lead_name', 'email', 'business_name']
 
+        if not all(field in data for field in required_fields):
+            return jsonify({"status": "error", "message": "Missing required fields"}), 400
 
-import os
+        # Run the bot script with the input data
+        subprocess.run(["python3", "Main.py", json.dumps(data)], check=True)
+        return jsonify({"status": "success", "message": "Bot executed"}), 200
+
+    except subprocess.CalledProcessError as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     try:
